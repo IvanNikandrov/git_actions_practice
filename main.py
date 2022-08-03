@@ -32,7 +32,7 @@ login_manager.login_message_category = 'success'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return UserLogin().fromDB(user_id, dbase)
+    return UserLogin().fromDB(user_id, DBASE)
 
 
 def connect_db():
@@ -55,14 +55,14 @@ def get_db():
     return g.link_db
 
 
-dbase = None
+DBASE = None
 
 
 @app.before_request
 def before_request():
-    global dbase
+    global DBASE
     db = get_db()
-    dbase = FDataBase(db)
+    DBASE = FDataBase(db)
 
 
 @app.teardown_appcontext
@@ -73,14 +73,14 @@ def close_db(error):
 
 @app.route('/')
 def index():
-    return render_template('index.html', menu=dbase.getMenu(), posts=dbase.getPostsAnonce())
+    return render_template('index.html', menu=DBASE.getMenu(), posts=DBASE.getPostsAnonce())
 
 
 @app.route('/add_post', methods=["POST", "GET"])
 def addPost():
     if request.method == "POST":
         if len(request.form["name"]) > 4 and len(request.form["post"]) > 10:
-            res = dbase.addPost(request.form["name"], request.form["post"], request.form["url"])
+            res = DBASE.addPost(request.form["name"], request.form["post"], request.form["url"])
             if not res:
                 flash("Ошибка добавления статьи", category='error')
             else:
@@ -88,28 +88,28 @@ def addPost():
         else:
             flash("Ошибка добавления статьи", category='error')
 
-    return render_template('add_post.html', title='Добавление статьи', menu=dbase.getMenu())
+    return render_template('add_post.html', title='Добавление статьи', menu=DBASE.getMenu())
 
 
 @app.route("/post/<alias>")
 @login_required
 def showPost(alias):
-    title, post = dbase.getPost(alias)
+    title, post = DBASE.getPost(alias)
     if not title:
         abort(404)
-    return render_template('post.html', title=title, menu=dbase.getMenu(), post=post)
+    return render_template('post.html', title=title, menu=DBASE.getMenu(), post=post)
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html', title='О нас', menu=dbase.getMenu())
+    return render_template('about.html', title='О нас', menu=DBASE.getMenu())
 
 
 @app.route('/contact', methods=["POST", "GET"])
 def contact():
     if request.method == "POST":
         if len(request.form["username"]) > 4 and len(request.form["message"]) > 10:
-            res = dbase.addContact(request.form["username"], request.form["email"], request.form["message"])
+            res = DBASE.addContact(request.form["username"], request.form["email"], request.form["message"])
             if not res:
                 flash("Ошибка добавления статьи", category='error')
             else:
@@ -117,13 +117,13 @@ def contact():
         else:
             flash("Ошибка добавления статьи", category='error')
 
-    return render_template('contact.html', title='Оставь свой комментарий', menu=dbase.getMenu())
+    return render_template('contact.html', title='Оставь свой комментарий', menu=DBASE.getMenu())
 
 
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template("profile.html", menu=dbase.getMenu(), title="Профиль")
+    return render_template("profile.html", menu=DBASE.getMenu(), title="Профиль")
 
 
 @app.route('/login', methods=["POST", "GET"])
@@ -134,14 +134,14 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = dbase.getUserByEmail(form.email.data)
+        user = DBASE.getUserByEmail(form.email.data)
         if user and check_password_hash(user["psw"], form.psw.data):
             userlogin = UserLogin().create(user)
             rm = form.remember.data
             login_user(userlogin, remember=rm)
             return redirect(request.args.get("next") or url_for("profile"))
-        flash("Неверная пара логин\пароль", "error")
-    return render_template("login.html", menu=dbase.getMenu(), title='Авторизация', form=form)
+        flash("Неверная пара логин и пароль", "error")
+    return render_template("login.html", menu=DBASE.getMenu(), title='Авторизация', form=form)
 
 
 @app.route("/register", methods=["POST", "GET"])
@@ -149,14 +149,14 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hash = generate_password_hash(form.psw.data)
-        res = dbase.addUser(form.name.data, form.email.data, hash)
+        res = DBASE.addUser(form.name.data, form.email.data, hash)
         if res:
             flash("Вы успешно зарегистрированы", "success")
             return redirect(url_for('login'))
         else:
             flash("Ошибка при добавлении в БД", "error")
 
-    return render_template("register.html", menu=dbase.getMenu(), title="Регистрация", form=form)
+    return render_template("register.html", menu=DBASE.getMenu(), title="Регистрация", form=form)
 
 
 @login_required
@@ -169,7 +169,7 @@ def logout():
 
 @app.errorhandler(404)
 def pageNotFound(error):
-    return render_template('page404.html', title='Страница не найдена', menu=dbase.getMenu())
+    return render_template('page404.html', title='Страница не найдена', menu=DBASE.getMenu())
 
 
 @app.route('/userava')
@@ -192,7 +192,7 @@ def upload():
         if file and current_user.verifyExt(file.filename):
             try:
                 img = file.read()
-                res = dbase.updateUserAvatar(img, current_user.get_id())
+                res = DBASE.updateUserAvatar(img, current_user.get_id())
                 if not res:
                     flash("Ошибка обновления аватара", "error")
                 flash("Аватар обновлен", "success")

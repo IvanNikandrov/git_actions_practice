@@ -57,7 +57,7 @@ class FDataBase:
 
     def getPostsAnonce(self):
         try:
-            self.__cur.execute(f"SELECT id, title, text, url FROM posts ORDER BY time DESC")
+            self.__cur.execute("SELECT id, title, text, url FROM posts ORDER BY time DESC")
             res = self.__cur.fetchall()
             if res:
                 return res
@@ -114,10 +114,9 @@ class FDataBase:
 
             return res
         except sqlite3.Error as e:
-            print("Ошибка получения данных из БД "+str(e))
+            print("Ошибка получения данных из БД " + str(e))
 
         return False
-
 
     def updateUserAvatar(self, avatar, user_id):
         if not avatar:
@@ -125,9 +124,9 @@ class FDataBase:
 
         try:
             binary = sqlite3.Binary(avatar)
-            self.__cur.execute(f"UPDATE users SET avatar = ? WHERE id = ?", (binary, user_id))
+            self.__cur.execute("UPDATE users SET avatar = ? WHERE id = ?", (binary, user_id))
             self.__db.commit()
         except sqlite3.Error as e:
-            print("Ошибка обновления аватара в БД: "+str(e))
+            print("Ошибка обновления аватара в БД: " + str(e))
             return False
         return True

@@ -10,10 +10,13 @@ menu = [{'url': '.index', 'title': 'Панель'},
         {'url': '.logout', 'title': 'Выйти'}]
 
 db = None
+
+
 @admin.before_request
 def before_request():
     global db
     db = g.get('link_db')
+
 
 @admin.teardown_request
 def teardown_request(request):
@@ -78,6 +81,7 @@ def listpubs():
             print('Ошибка подключения к БД', str(e))
     return render_template('admin/listpubs.html', title="Список статей", menu=menu, list=list)
 
+
 @admin.route('list-users')
 def listusers():
     if not isLogged():
@@ -92,6 +96,3 @@ def listusers():
         except sqlite3.Error as e:
             print('Ошибка подключения к БД', str(e))
     return render_template('admin/listusers.html', title='Список пользователей', menu=menu, list=list)
-
-
-
