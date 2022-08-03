@@ -369,6 +369,7 @@ disable = [
     "redefined-builtin",
     "no-else-return",
     "unused-argument",
+    "too-few-public-methods"
 
 
 ]
