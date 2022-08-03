@@ -8,7 +8,7 @@ class UserLogin(UserMixin):
         return self
 
     def create(self, user):
-        self.__user = user
+        self.user = user
         return self
 
     def get_id(self):
@@ -27,7 +27,7 @@ class UserLogin(UserMixin):
                 with app.open_resource(app.root_path + url_for('static', filename='images/default.png'), "rb") as f:
                     img = f.read()
             except FileNotFoundError as e:
-                print("Не найден аватар по умолчанию: "+str(e))
+                print("Не найден аватар по умолчанию: " + str(e))
         else:
             img = self.__user['avatar']
 
@@ -35,6 +35,6 @@ class UserLogin(UserMixin):
 
     def verifyExt(self, filename):
         ext = filename.rsplit('.', 1)[1]
-        if ext == "png" or ext == "PNG":
+        if ext in ("png", "PNG"):
             return True
         return False

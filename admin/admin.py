@@ -53,7 +53,7 @@ def login():
             login_admin()
             return redirect(url_for('.index'))
         else:
-            flash("Неверная пара логин\пароль", 'error')
+            flash("Неверная пара логин и пароль", 'error')
     return render_template('admin/login.html', title="Админ-панель")
 
 

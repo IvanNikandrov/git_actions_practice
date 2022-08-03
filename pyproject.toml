@@ -359,7 +359,18 @@ disable = [
     "missing-module-docstring",
     "invalid-name",
     "missing-class-docstring",
-    "import-error"
+    "import-error",
+    "bare-except",
+    "attribute-defined-outside-init",
+    "global-statement",
+    "redefined-outer-name",
+    "f-string-without-interpolation",
+    "simplifiable-if-expression",
+    "redefined-builtin",
+    "no-else-return",
+    "unused-argument",
+
+
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can

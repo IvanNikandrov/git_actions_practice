@@ -1,14 +1,16 @@
-from flask import (
-    Flask, render_template, url_for,
-    request, flash, get_flashed_messages,
-    redirect, session, abort, g, make_response
-)
 import sqlite3
 import os
-from FDataBase import FDataBase
-from werkzeug.security import generate_password_hash, check_password_hash
-from UserLogin import UserLogin
+from flask import (
+    Flask, render_template, url_for,
+    request, flash,
+    redirect, abort, g, make_response
+)
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from FDataBase import FDataBase
+
+from UserLogin import UserLogin
+
 from forms import LoginForm, RegisterForm
 from admin.admin import admin
 
@@ -196,7 +198,7 @@ def upload():
                 if not res:
                     flash("Ошибка обновления аватара", "error")
                 flash("Аватар обновлен", "success")
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 flash("Ошибка чтения файла", "error")
         else:
             flash("Ошибка обновления аватара", "error")
